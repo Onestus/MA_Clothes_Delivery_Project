@@ -9,6 +9,6 @@ RUN pip install --no-cache-dir --upgrade -r /gateway/requirements.txt
 # Перенос проекта в образ
 COPY ./gateway/app /gateway/app
 
-EXPOSE 87
+#EXPOSE 8000
 
-CMD ["/bin/sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 87"]
+CMD ["/bin/sh", "-c", "uvicorn app.main:app --host 0.0.0.0"]

@@ -150,7 +150,7 @@ services:
       context: ./
       dockerfile: ./gateway/Dockerfile
     ports:
-      - "87:87"
+      - "8000:8000"
     # depends_on:
     # - postgres-cart
     # - rabbitmq
