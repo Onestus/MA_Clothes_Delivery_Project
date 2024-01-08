@@ -15,29 +15,29 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.export import ConsoleSpanExporter
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from app.settings import settings
 
 provider = TracerProvider()
 processor = BatchSpanProcessor(ConsoleSpanExporter())
 provider.add_span_processor(processor)
 trace.set_tracer_provider(
-  TracerProvider(
-    resource=Resource.create({SERVICE_NAME: "printing-Service"})
-  )
+    TracerProvider(
+        resource=Resource.create({SERVICE_NAME: "printing-Service"})
+    )
 )
 jaeger_exporter = JaegerExporter(
-  agent_host_name="localhost",
-  agent_port=6831,
+    agent_host_name=settings.host_ip,
+    agent_port=6831,
 )
 trace.get_tracer_provider().add_span_processor(
-  BatchSpanProcessor(jaeger_exporter)
+    BatchSpanProcessor(jaeger_exporter)
 )
 
-name='Printing Service'
+name = 'Printing Service'
 tracer = trace.get_tracer(name)
 
 printing_router = APIRouter(prefix='/printing', tags=['Printing'])
 metrics_router = APIRouter(tags=['Metrics'])
-
 
 get_printings_count = prometheus_client.Counter(
     "get_printings_count",
@@ -64,17 +64,20 @@ cancelled_printing_count = prometheus_client.Counter(
     "Total canceled printings"
 )
 
-delivery_service_url = "http://app_delivery:80"
+delivery_service_url = f"http://{settings.host_ip}:80"
+
 
 def user_staff_admin(role):
     if role == "client" or role == "staff" or role == "admin":
         return True
     return False
 
+
 def staff_admin(role):
     if role == "staff" or role == "admin":
         return True
     return False
+
 
 def make_request_to_delivery_service(id):
     url = f"{delivery_service_url}/api/delivery/"
@@ -88,8 +91,10 @@ def make_request_to_delivery_service(id):
     else:
         raise Exception(f"Error making request to delivery: {response.status_code}, {response.text}")
 
+
 @printing_router.get('/all')
-def get_printings(printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> list[Printing]:
+def get_printings(printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> list[
+    Printing]:
     user = eval(user)
     with tracer.start_as_current_span("Get printings"):
         if user['id'] is not None:
@@ -98,8 +103,10 @@ def get_printings(printing_service: PrintingService = Depends(PrintingService), 
                 return printing_service.get_printings()
             raise HTTPException(403)
 
+
 @printing_router.get('/{id}')
-def get_printing_by_id(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+def get_printing_by_id(id: UUID, printing_service: PrintingService = Depends(PrintingService),
+                       user: str = Header(...)) -> Printing:
     user = eval(user)
     with tracer.start_as_current_span("Get users printings"):
         if user['id'] is not None:
@@ -118,7 +125,7 @@ def add_printing(
         try:
             print(str(printing_info))
             printing = printing_service.create_printing(printing_info.id)
-            #make_request_to_delivery_service(printing_info.id)
+            # make_request_to_delivery_service(printing_info.id)
             created_printing_count.inc(1)
             return printing.dict()
         except KeyError:
@@ -126,7 +133,8 @@ def add_printing(
 
 
 @printing_router.post('/{id}/begin')
-def begin_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+def begin_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService),
+                   user: str = Header(...)) -> Printing:
     user = eval(user)
     try:
         if user['id'] is not None:
@@ -142,7 +150,8 @@ def begin_printing(id: UUID, printing_service: PrintingService = Depends(Printin
 
 
 @printing_router.post('/{id}/finish')
-def finish_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+def finish_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService),
+                    user: str = Header(...)) -> Printing:
     user = eval(user)
     try:
         if user['id'] is not None:
@@ -157,9 +166,9 @@ def finish_printing(id: UUID, printing_service: PrintingService = Depends(Printi
         raise HTTPException(400, f'Printing with id={id} can\'t be finished')
 
 
-
 @printing_router.post('/{id}/cancel')
-def cancel_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+def cancel_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService),
+                    user: str = Header(...)) -> Printing:
     user = eval(user)
     try:
         if user['id'] is not None:

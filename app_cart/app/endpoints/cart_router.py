@@ -74,17 +74,20 @@ create_cart_count = prometheus_client.Counter(
     "Number of get requests"
 )
 
+
 def user_staff_admin(role):
     if role == "client" or role == "staff" or role == "admin":
         return True
     return False
+
 
 def staff_admin(role):
     if role == "staff" or role == "admin":
         return True
     return False
 
-target_service_url = "http://192.168.1.92:84"
+
+target_service_url = f"http://{settings.host_ip}:84"
 
 
 def make_request_to_target_service(data):
@@ -142,7 +145,8 @@ def get_cart_by_id(cart_service: CartService = Depends(CartService), user: str =
 
 
 @cart_router.post('/')
-def create_or_update_cart(item: Item, cart_service: CartService = Depends(CartService), user: str = Header(...)) -> Cart:
+def create_or_update_cart(item: Item, cart_service: CartService = Depends(CartService),
+                          user: str = Header(...)) -> Cart:
     user = eval(user)
     try:
         if user['id'] is not None:

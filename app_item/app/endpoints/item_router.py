@@ -60,7 +60,7 @@ def add_operation_result(span: Span, result: str) -> None:
 
 
 item_router = APIRouter(prefix='/item', tags=['Item'])
-target_service_url = "http://192.168.1.92:86"
+target_service_url = f"http://{settings.host_ip}:86"
 
 
 def user_staff_admin(role):
@@ -68,10 +68,12 @@ def user_staff_admin(role):
         return True
     return False
 
+
 def staff_admin(role):
     if role == "staff" or role == "admin":
         return True
     return False
+
 
 def make_request_to_target_service(item_id, size, count, price, name, user):
     url = f"{target_service_url}/api/cart/"
@@ -194,9 +196,9 @@ def delete_design(
 
 
 @item_router.delete('/delete_item/{id}')
-def delete_item(id: UUID, 
+def delete_item(id: UUID,
                 item_service: ItemService = Depends(ItemService),
-                user: str = Header(...),) -> Item:
+                user: str = Header(...), ) -> Item:
     user = eval(user)
     with tracer.start_as_current_span("Delete design") as span:
         add_endpoint_info(span, "/delete-design/{id}")

@@ -8,8 +8,9 @@ from endpoints.auth_router import auth_router
 from starlette.responses import RedirectResponse
 from enum import Enum
 import logging
-host_ip = "192.168.1.92"
-auth_url = "http://127.0.0.1:8000/auth/login"
+
+host_ip = "158.160.14.173"
+auth_url = f"http://{host_ip}:8000/auth/login"
 
 logging.basicConfig()
 
@@ -21,13 +22,13 @@ app.include_router(auth_router)
 
 
 MICROSERVICES = {
-    "order": "http://192.168.1.92:84/api",
-    "promocode": "http://192.168.1.92:85/api",
-    "item": "http://192.168.1.92:83/api",
-    "cart": "http://192.168.1.92:86/api",
-    "printing": "http://192.168.1.92:81/api",
-    "payment": "http://192.168.1.92:82/api",
-    "delivery": "http://192.168.1.92:80/api"
+    "order": f"http://{host_ip}:84/api",
+    "promocode": f"http://{host_ip}:85/api",
+    "item": f"http://{host_ip}:83/api",
+    "cart": f"http://{host_ip}:86/api",
+    "printing": f"http://{host_ip}:81/api",
+    "payment": f"http://{host_ip}:82/api",
+    "delivery": f"http://{host_ip}:80/api"
 }
 
 # MICROSERVICES = {
