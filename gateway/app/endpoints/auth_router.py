@@ -21,6 +21,8 @@ logging.basicConfig()
 def get_user_role(request: Request):
     
     token = request.session.get('auth_token')
+    print("#############################################################################################")
+    print(token)
     headers = {"Authorization": f"Bearer {token}"}
     user = {'role': '', 'id': '', 'username': ''}
     #return user
