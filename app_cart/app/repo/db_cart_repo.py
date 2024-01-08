@@ -50,7 +50,7 @@ class CartRepo():
             .filter((DBCart.user_id == user_id) & (DBCart.status == CartStatuses.CREATED)) \
             .first()
         if cart is None:
-            return None
+            raise HTTPException(204)
         return self._map_to_model(cart)
 
 

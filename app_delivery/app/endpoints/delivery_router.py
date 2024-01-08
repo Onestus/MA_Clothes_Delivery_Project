@@ -64,12 +64,26 @@ cancelled_delivery_count = prometheus_client.Counter(
     "Total canceled deliveries"
 )
 
+def user_staff_admin(role):
+    if role == "client" or role == "staff" or role == "admin":
+        return True
+    return False
+
+def staff_admin(role):
+    if role == "staff" or role == "admin":
+        return True
+    return False
+
 
 @delivery_router.get('/all')
-def get_deliveries(delivery_service: DeliveryService = Depends(DeliveryService)) -> list[Delivery]:
+def get_deliveries(delivery_service: DeliveryService = Depends(DeliveryService), user: str = Header(...)) -> list[Delivery]:
+    user = eval(user)
     with tracer.start_as_current_span("Get deliveries"):
-        get_deliveries_count.inc(1)
-        return delivery_service.get_deliveries()
+        if user['id'] is not None:
+                if staff_admin(user['role']):
+                    get_deliveries_count.inc(1)
+                    return delivery_service.get_deliveries()
+                raise HTTPException(403)
     
 
 @delivery_router.get('/{id}')
@@ -78,9 +92,10 @@ def get_delivery_by_id(id: UUID, delivery_service: DeliveryService = Depends(Del
     with tracer.start_as_current_span("Get deliveries"):
         try:
             if user['id'] is not None:
-                if user['role'] == "Viewer" or user['role'] == "Customer":
+                if user_staff_admin(user['role']):
                     get_deliveries_count.inc(1)
                     return delivery_service.get_delivery_by_id(id)
+                raise HTTPException(403)
         except KeyError:
             raise HTTPException(404, f'Delivery with {id} not found')
         return 
@@ -101,11 +116,15 @@ def add_delivery(
 
 
 @delivery_router.post('/{id}/activate')
-def activate_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService)) -> Delivery:
+def activate_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService), user: str = Header(...)) -> Delivery:
+    user = eval(user)
     try:
-        delivery = delivery_service.activate_delivery(id)
-        started_delivery_count.inc(1)
-        return delivery.dict()
+        if user['id'] is not None:
+            if staff_admin(user['role']):
+                delivery = delivery_service.activate_delivery(id)
+                started_delivery_count.inc(1)
+                return delivery.dict()
+            raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Delivery with id={id} not found')
     except ValueError:
@@ -113,12 +132,16 @@ def activate_delivery(id: UUID, delivery_service: DeliveryService = Depends(Deli
 
 
 @delivery_router.post('/{id}/finish')
-def finish_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService)) -> Delivery:
+def finish_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService), user: str = Header(...)) -> Delivery:
+    user = eval(user)
     try:
-        delivery = delivery_service.finish_delivery(id)
-        asyncio.run(send_finish_delivery(id))
-        completed_delivery_count.inc(1)
-        return delivery.dict()
+        if user['id'] is not None:
+            if staff_admin(user['role']):
+                delivery = delivery_service.finish_delivery(id)
+                asyncio.run(send_finish_delivery(id))
+                completed_delivery_count.inc(1)
+                return delivery.dict()
+            raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Delivery with id={id} not found')
     except ValueError:
@@ -126,11 +149,15 @@ def finish_delivery(id: UUID, delivery_service: DeliveryService = Depends(Delive
 
 
 @delivery_router.post('/{id}/cancel')
-def cancel_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService)) -> Delivery:
+def cancel_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService), user: str = Header(...)) -> Delivery:
+    user = eval(user)
     try:
-        delivery = delivery_service.cancel_delivery(id)
-        cancelled_delivery_count.inc(1)
-        return delivery.dict()
+        if user['id'] is not None:
+                if staff_admin(user['role']):
+                    delivery = delivery_service.cancel_delivery(id)
+                    cancelled_delivery_count.inc(1)
+                    return delivery.dict()
+                raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Delivery with id={id} not found')
     except ValueError:
@@ -138,10 +165,14 @@ def cancel_delivery(id: UUID, delivery_service: DeliveryService = Depends(Delive
 
 
 @delivery_router.post('/{id}/choose_pickup')
-def choose_pickup(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService)) -> Delivery:
+def choose_pickup(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService), user: str = Header(...)) -> Delivery:
+    user = eval(user)
     try:
-        delivery = delivery_service.choose_pickup(id)
-        return delivery.dict()
+        if user['id'] is not None:
+                if user_staff_admin(user['role']):
+                    delivery = delivery_service.choose_pickup(id)
+                    return delivery.dict()
+                raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Delivery with id={id} not found')
     except ValueError:
@@ -149,10 +180,14 @@ def choose_pickup(id: UUID, delivery_service: DeliveryService = Depends(Delivery
 
 
 @delivery_router.post('/{id}/choose_delivery')
-def choose_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService)) -> Delivery:
+def choose_delivery(id: UUID, delivery_service: DeliveryService = Depends(DeliveryService), user: str = Header(...)) -> Delivery:
+    user = eval(user)
     try:
-        delivery = delivery_service.choose_delivery(id)
-        return delivery.dict()
+        if user['id'] is not None:
+                if user_staff_admin(user['role']):
+                    delivery = delivery_service.choose_delivery(id)
+                    return delivery.dict()
+                raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Delivery with id={id} not found')
     except ValueError:

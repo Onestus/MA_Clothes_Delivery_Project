@@ -4,7 +4,7 @@ import httpx
 import prometheus_client
 from app.models.printing import Printing, CreatePrintingRequest
 from app.services.printing_service import PrintingService
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Header
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
@@ -66,6 +66,16 @@ cancelled_printing_count = prometheus_client.Counter(
 
 delivery_service_url = "http://app_delivery:80"
 
+def user_staff_admin(role):
+    if role == "client" or role == "staff" or role == "admin":
+        return True
+    return False
+
+def staff_admin(role):
+    if role == "staff" or role == "admin":
+        return True
+    return False
+
 def make_request_to_delivery_service(id):
     url = f"{delivery_service_url}/api/delivery/"
     print(str(id))
@@ -79,16 +89,24 @@ def make_request_to_delivery_service(id):
         raise Exception(f"Error making request to delivery: {response.status_code}, {response.text}")
 
 @printing_router.get('/all')
-def get_printings(printing_service: PrintingService = Depends(PrintingService)) -> list[Printing]:
+def get_printings(printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> list[Printing]:
+    user = eval(user)
     with tracer.start_as_current_span("Get printings"):
-        get_printings_count.inc(1)
-        return printing_service.get_printings()
+        if user['id'] is not None:
+            if staff_admin(user['role']):
+                get_printings_count.inc(1)
+                return printing_service.get_printings()
+            raise HTTPException(403)
 
 @printing_router.get('/{id}')
-def get_printing_by_id(id: UUID, printing_service: PrintingService = Depends(PrintingService)) -> Printing:
+def get_printing_by_id(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+    user = eval(user)
     with tracer.start_as_current_span("Get users printings"):
-        get_printings_count.inc(1)
-        return printing_service.get_printing_by_id(id)
+        if user['id'] is not None:
+            if user_staff_admin(user['role']):
+                get_printings_count.inc(1)
+                return printing_service.get_printing_by_id(id)
+            raise HTTPException(403)
 
 
 @printing_router.post('/')
@@ -108,11 +126,15 @@ def add_printing(
 
 
 @printing_router.post('/{id}/begin')
-def begin_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService)) -> Printing:
+def begin_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+    user = eval(user)
     try:
-        printing = printing_service.begin_printing(id)
-        started_printing_count.inc(1)
-        return printing.dict()
+        if user['id'] is not None:
+            if staff_admin(user['role']):
+                printing = printing_service.begin_printing(id)
+                started_printing_count.inc(1)
+                return printing.dict()
+            raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Printing with id={id} not found')
     except ValueError:
@@ -120,12 +142,15 @@ def begin_printing(id: UUID, printing_service: PrintingService = Depends(Printin
 
 
 @printing_router.post('/{id}/finish')
-def finish_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService)) -> Printing:
+def finish_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+    user = eval(user)
     try:
-
-        printing = printing_service.finish_printing(id)
-        completed_printing_count.inc(1)
-        return printing.dict()
+        if user['id'] is not None:
+            if staff_admin(user['role']):
+                printing = printing_service.finish_printing(id)
+                completed_printing_count.inc(1)
+                return printing.dict()
+            raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Printing with id={id} not found')
     except ValueError:
@@ -134,11 +159,15 @@ def finish_printing(id: UUID, printing_service: PrintingService = Depends(Printi
 
 
 @printing_router.post('/{id}/cancel')
-def cancel_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService)) -> Printing:
+def cancel_printing(id: UUID, printing_service: PrintingService = Depends(PrintingService), user: str = Header(...)) -> Printing:
+    user = eval(user)
     try:
-        printing = printing_service.cancel_printing(id)
-        cancelled_printing_count.inc(1)
-        return printing.dict()
+        if user['id'] is not None:
+            if staff_admin(user['role']):
+                printing = printing_service.cancel_printing(id)
+                cancelled_printing_count.inc(1)
+                return printing.dict()
+            raise HTTPException(403)
     except KeyError:
         raise HTTPException(404, f'Printing with id={id} not found')
     except ValueError:
