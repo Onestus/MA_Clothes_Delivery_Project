@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd ./MA_Clothes_Delivery_Project
-            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up --build -d
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up --build -d
