@@ -21,7 +21,7 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
           cd ./MA_Clothes_Delivery_Project
-          sudo git pull
+          echo ${{ secrets.SSH_PASSWORD }} | sudo -S git pull
 
     - name: Recreate Docker Containers
       uses: appleboy/ssh-action@master
