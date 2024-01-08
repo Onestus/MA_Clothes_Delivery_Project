@@ -42,7 +42,7 @@ services:
 
   app_delivery:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_delivery/Dockerfile
     ports:
       - "80:80"
@@ -57,7 +57,7 @@ services:
 
   app_printing:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_printing/Dockerfile
     ports:
       - "81:81"
@@ -72,7 +72,7 @@ services:
 
   app_payment:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_payment/Dockerfile
     ports:
       - "82:82"
@@ -87,7 +87,7 @@ services:
 
   app_item:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_item/Dockerfile
     ports:
       - "83:83"
@@ -102,7 +102,7 @@ services:
 
   app_order:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_order/Dockerfile
     ports:
       - "84:84"
@@ -117,7 +117,7 @@ services:
 
   app_promocode:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_promocode/Dockerfile
     ports:
       - "85:85"
@@ -132,7 +132,7 @@ services:
 
   app_cart:
     build:
-      context: .
+      context: ~/clothes-delivery-project/MA_Clothes_Delivery_Project
       dockerfile: /app_cart/Dockerfile
     ports:
       - "86:86"
