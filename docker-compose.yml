@@ -43,7 +43,7 @@ services:
   app_delivery:
     build:
       context: ./
-      dockerfile: ~/app_delivery/Dockerfile
+      dockerfile: ./app_delivery/Dockerfile
     ports:
       - "80:80"
     # depends_on:
