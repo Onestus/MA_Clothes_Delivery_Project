@@ -28,12 +28,14 @@ jobs:
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_PRINTING=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_printing
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/printings
 
       - name: Run integration tests
         run: |
@@ -61,12 +63,14 @@ jobs:
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_DELIVERY=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_delivery
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/deliveries
 
       - name: Run integration tests
         run: |
@@ -94,12 +98,14 @@ jobs:
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_PAYMENT=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_payment
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/payments
 
       - name: Run integration tests
         run: |
@@ -127,12 +133,14 @@ jobs:
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_ORDER=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_order
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/orders
 
       - name: Run integration tests
         run: |
@@ -160,12 +168,14 @@ jobs:
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_ITEM=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_item
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/items
 
       - name: Run integration tests
         run: |
@@ -186,23 +196,25 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest ./app_promocode/tests/unit
+          pytest ./app_promocode/test/unit
 
       - name: Prepare integration tests
         run: |
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_PROMOCODE=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_promocode
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/promocodes
 
       - name: Run integration tests
         run: |
-          pytest ./app_promocode/tests/integration
+          pytest ./app_promocode/test/integration
 
   test-app-cart:
     name: Run app_cart tests
@@ -226,12 +238,14 @@ jobs:
           sudo docker run --name pg-tests -e POSTGRES_PASSWORD=krya -p 5432:5432 -d postgres:latest
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
-          POSTGRES_URL=$POSTGRES_URL
+          POSTGRES_URL_CART=$POSTGRES_URL
           " > ./.env
           sleep 5
+          cd app_cart
+          alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest@actual_pr678-rabbitmq-1:5672/
-          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/postgres
+          POSTGRES_URL: postgresql://postgres:krya@localhost:5432/carts
 
       - name: Run integration tests
         run: |
@@ -239,7 +253,7 @@ jobs:
   
   
 
-  deploy:
+  update-and-deploy:
     runs-on: ubuntu-latest
     needs: [ test-app-printing, test-app-cart, test-app-promocode, test-app-item, test-app-order, test-app-payment, test-app-delivery ]
     steps:
