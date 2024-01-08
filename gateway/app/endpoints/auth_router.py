@@ -6,11 +6,11 @@ import logging
 
 
 host_ip = "158.160.14.173"
-keycloak_client_id = "gateway"
+keycloak_client_id = "vm"
 keycloak_authorization_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/auth"
 keycloak_token_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/token"
 keycloak_user_info_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/userinfo"
-keycloak_client_secret = "VGnclHZpVKd0oBNiHVuOGcOR3MamxaOi"
+keycloak_client_secret = "hWGFoxuI2o2CVchjLI1l4SPh4cxywidL"
 keycloak_redirect_uri = f"http://{host_ip}:8000/auth/callback"
 keycloak_logout_uri = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/logout"
 
