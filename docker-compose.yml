@@ -55,105 +55,105 @@ services:
     networks:
       - app
 
-#  app_printing:
-#    build:
-#      context: ./
-#      dockerfile: /app_printing/Dockerfile
-#    ports:
-#      - "81:81"
-#    # depends_on:
-#      # - postgres-printing
-#      # - rabbitmq
-#    labels:
-#      logging: "promtail"
-#      logging_jobname: "containerlogs"
-#    networks:
-#      - app
-#
-#  app_payment:
-#    build:
-#      context: ./
-#      dockerfile: /app_payment/Dockerfile
-#    ports:
-#      - "82:82"
-#    # depends_on:
-#      # - postgres-payment
-#      # - rabbitmq
-#    labels:
-#      logging: "promtail"
-#      logging_jobname: "containerlogs"
-#    networks:
-#      - app
-#
-#  app_item:
-#    build:
-#      context: ./
-#      dockerfile: /app_item/Dockerfile
-#    ports:
-#      - "83:83"
-#    # depends_on:
-#    # - postgres-cart
-#    # - rabbitmq
-#    labels:
-#      logging: "promtail"
-#      logging_jobname: "containerlogs"
-#    networks:
-#      - app
-#
-#  app_order:
-#    build:
-#      context: ./
-#      dockerfile: /app_order/Dockerfile
-#    ports:
-#      - "84:84"
-#    # depends_on:
-#    # - postgres-order
-#    # - rabbitmq
-#    labels:
-#      logging: "promtail"
-#      logging_jobname: "containerlogs"
-#    networks:
-#      - app
-#
-#  app_promocode:
-#    build:
-#      context: ./
-#      dockerfile: /app_promocode/Dockerfile
-#    ports:
-#      - "85:85"
-#    # depends_on:
-#    # - postgres-promocode
-#    # - rabbitmq
-#    labels:
-#      logging: "promtail"
-#      logging_jobname: "containerlogs"
-#    networks:
-#      - app
-#
-#  app_cart:
-#    build:
-#      context: ./
-#      dockerfile: /app_cart/Dockerfile
-#    ports:
-#      - "86:86"
-#    # depends_on:
-#    # - postgres-cart
-#    # - rabbitmq
-#    labels:
-#      logging: "promtail"
-#      logging_jobname: "containerlogs"
-#    networks:
-#      - app
-#
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: vkryazhevskikh@gmail.com
-#      PGADMIN_DEFAULT_PASSWORD: admin
-#    ports:
-#      - "5050:80"
-#    networks:
-#      - app
+  app_printing:
+    build:
+      context: ./
+      dockerfile: ./app_printing/Dockerfile
+    ports:
+      - "81:81"
+    # depends_on:
+      # - postgres-printing
+      # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
+  app_payment:
+    build:
+      context: ./
+      dockerfile: ./app_payment/Dockerfile
+    ports:
+      - "82:82"
+    # depends_on:
+      # - postgres-payment
+      # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
+  app_item:
+    build:
+      context: ./
+      dockerfile: ./app_item/Dockerfile
+    ports:
+      - "83:83"
+    # depends_on:
+    # - postgres-cart
+    # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
+  app_order:
+    build:
+      context: ./
+      dockerfile: ./app_order/Dockerfile
+    ports:
+      - "84:84"
+    # depends_on:
+    # - postgres-order
+    # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
+  app_promocode:
+    build:
+      context: ./
+      dockerfile: ./app_promocode/Dockerfile
+    ports:
+      - "85:85"
+    # depends_on:
+    # - postgres-promocode
+    # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
+  app_cart:
+    build:
+      context: ./
+      dockerfile: /app_cart/Dockerfile
+    ports:
+      - "86:86"
+    # depends_on:
+    # - postgres-cart
+    # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: vkryazhevskikh@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - app
 ###########################
   ############################
   ##############################
