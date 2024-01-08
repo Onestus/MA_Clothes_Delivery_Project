@@ -4,7 +4,7 @@ FROM python:3.10
 WORKDIR /app_cart
 
 # Установка зависимостей проекта
-COPY ./app_cart/requirements.txt /app_cart/
+COPY /app_cart/requirements.txt /app_cart/
 RUN pip install --no-cache-dir --upgrade -r /app_cart/requirements.txt
 
 # Перенос проекта в образ
