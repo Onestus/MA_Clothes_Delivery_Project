@@ -42,13 +42,13 @@ class CartRepo():
             raise KeyError
         return self._map_to_model(cart)
 
-    def get_cart_by_user(self, user_id: UUID) -> Cart:
+    def get_cart_by_user(self, user_id: UUID) -> None:
         cart = self.db \
             .query(DBCart) \
             .filter((DBCart.user_id == user_id) & (DBCart.status == CartStatuses.CREATED)) \
             .first()
         if cart is None:
-            raise HTTPException(204)
+            return None
         return self._map_to_model(cart)
 
 

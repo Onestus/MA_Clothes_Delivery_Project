@@ -9,6 +9,7 @@ from starlette.responses import RedirectResponse
 from enum import Enum
 import logging
 host_ip = "192.168.1.92"
+auth_url = "http://127.0.0.1:8000/auth/login"
 
 logging.basicConfig()
 
@@ -19,7 +20,6 @@ app.add_middleware(SessionMiddleware, secret_key='asas12334sadfdsf')
 app.include_router(auth_router)
 
 
-# Пример конфигурации микросервисов
 MICROSERVICES = {
     "order": "http://192.168.1.92:84/api",
     "promocode": "http://192.168.1.92:85/api",
@@ -29,6 +29,16 @@ MICROSERVICES = {
     "payment": "http://192.168.1.92:82/api",
     "delivery": "http://192.168.1.92:80/api"
 }
+
+# MICROSERVICES = {
+#     "order": "https://bbao8dmhdaak232edmks.containers.yandexcloud.net/api",
+#     "promocode": "https://bbaub0la0nct70lluck2.containers.yandexcloud.net//api",
+#     "item": "http://192.168.1.92:83/api",
+#     "cart": "http://192.168.1.92:86/api",
+#     "printing": "http://192.168.1.92:81/api",
+#     "payment": "https://bbagsn9ksci9tifcinu9.containers.yandexcloud.net/api",
+#     "delivery": "http://192.168.1.92:80/api"
+# }
 
 class dropdownChoices(str, Enum):
     xs = "xs"
@@ -57,7 +67,7 @@ def proxy_request(service_name: str, path: str, user_info, request: Request):
 def read_order(request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="order", path="/order/", user_info=current_user, request=request)  
 
@@ -65,7 +75,7 @@ def read_order(request: Request, current_user: dict = Depends(get_user_role)):
 def read_order(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="order", path=f"/order/{id}", user_info=current_user, request=request)
 
@@ -73,7 +83,7 @@ def read_order(id: UUID, request: Request, current_user: dict = Depends(get_user
 def set_discount_to_order(code: str, order_id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="promocode", path=f"/promocode/discount?code={code}&id={order_id}&clear=false", user_info=current_user, request=request)
     
@@ -96,7 +106,7 @@ def post_item_to_cart(
     ):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="item", path=f"/item/add_to_cart?item_id={item_id}&size={str(size.value)}&count={count}", user_info=current_user, request=request)
     
@@ -104,7 +114,7 @@ def post_item_to_cart(
 def get_cart_by_user_id(request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="cart", path=f"/cart/", user_info=current_user, request=request)
     
@@ -112,7 +122,7 @@ def get_cart_by_user_id(request: Request, current_user: dict = Depends(get_user_
 def create_order(request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="cart", path=f"/cart/create_order", user_info=current_user, request=request)
     
@@ -121,7 +131,7 @@ def create_order(request: Request, current_user: dict = Depends(get_user_role)):
 def get_user_payments(request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="payment", path=f"/payments/get-user-payments", user_info=current_user, request=request)
     
@@ -130,7 +140,7 @@ def get_user_payments(request: Request, current_user: dict = Depends(get_user_ro
 def process_payment(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="payment", path=f"/payments/{id}/process", user_info=current_user, request=request)
     
@@ -139,7 +149,7 @@ def process_payment(id: UUID, request: Request, current_user: dict = Depends(get
 def get_delivery_by_id(id:UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}", user_info=current_user, request=request)
 
@@ -147,7 +157,7 @@ def get_delivery_by_id(id:UUID, request: Request, current_user: dict = Depends(g
 def choose_pickup(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}/choose_pickup", user_info=current_user, request=request)
 
@@ -156,7 +166,7 @@ def choose_pickup(id: UUID, request: Request, current_user: dict = Depends(get_u
 def choose_delivery(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}/choose_delivery", user_info=current_user, request=request)
     
@@ -167,7 +177,7 @@ app.include_router(user_router)
 def get_printings(request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="printing", path=f"/printing/all", user_info=current_user, request=request)
 
@@ -175,7 +185,7 @@ def get_printings(request: Request, current_user: dict = Depends(get_user_role))
 def get_printing_by_id(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="printing", path=f"/printing/{id}", user_info=current_user, request=request)
 
@@ -183,7 +193,7 @@ def get_printing_by_id(id: UUID, request: Request, current_user: dict = Depends(
 def begin_printing(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="printing", path=f"/printing/{id}/begin", user_info=current_user, request=request)
 
@@ -191,7 +201,7 @@ def begin_printing(id: UUID, request: Request, current_user: dict = Depends(get_
 def finish_printing(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="printing", path=f"/printing/{id}/finish", user_info=current_user, request=request)
 
@@ -199,7 +209,7 @@ def finish_printing(id: UUID, request: Request, current_user: dict = Depends(get
 def cancel_printing(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="printing", path=f"/printing/{id}/cancel", user_info=current_user, request=request)
 
@@ -207,7 +217,7 @@ def cancel_printing(id: UUID, request: Request, current_user: dict = Depends(get
 def get_deliveries(request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/all", user_info=current_user, request=request)
 
@@ -215,7 +225,7 @@ def get_deliveries(request: Request, current_user: dict = Depends(get_user_role)
 def get_delivery_by_id(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}", user_info=current_user, request=request)
 
@@ -223,7 +233,7 @@ def get_delivery_by_id(id: UUID, request: Request, current_user: dict = Depends(
 def activate_delivery(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}/activate", user_info=current_user, request=request)
 
@@ -232,7 +242,7 @@ def activate_delivery(id: UUID, request: Request, current_user: dict = Depends(g
 def finish_delivery(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}/finish", user_info=current_user, request=request)
 
@@ -241,7 +251,7 @@ def finish_delivery(id: UUID, request: Request, current_user: dict = Depends(get
 def cancel_delivery(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
         return proxy_request(service_name="delivery", path=f"/delivery/{id}/cancel", user_info=current_user, request=request)
 
@@ -253,18 +263,18 @@ def create_item(name: str,
         request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
-        return proxy_request(service_name="item", path=f"/item?name={name}&price={price}&design={design}", user_info=current_user, request=request)
+        return proxy_request(service_name="item", path=f"/item/?name={name}&price={price}&design={design}", user_info=current_user, request=request)
 
 
 @staff_router.delete('/item/{id}')
 def delete_item(id: UUID, request: Request, current_user: dict = Depends(get_user_role)):
     if current_user['id'] == '':
         request.session['prev_url'] = str(request.url)
-        return RedirectResponse(url=f"http://127.0.0.1:8000/auth/login")
+        return RedirectResponse(url=auth_url)
     else:
-        return proxy_request(service_name="item", path=f"/item/{id}", user_info=current_user, request=request)
+        return proxy_request(service_name="item", path=f"/item/delete_item/{id}", user_info=current_user, request=request)
 
 
 

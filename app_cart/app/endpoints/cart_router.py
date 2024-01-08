@@ -147,7 +147,8 @@ def create_or_update_cart(item: Item, cart_service: CartService = Depends(CartSe
     try:
         if user['id'] is not None:
             if user_staff_admin(user['role']):
-                print(cart_service.get_cart_by_user(user['id']))
+                print('uaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+                print(cart_service.get_cart_by_user(user['id']), 'sss')
                 if cart_service.get_cart_by_user(user['id']):
                     create_cart_count.inc(1)
                     cart = cart_service.update_cart(user['id'], item)

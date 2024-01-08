@@ -140,6 +140,7 @@ def add_to_cart(
         item_service: ItemService = Depends(ItemService),
         user: str = Header(...),
 ) -> Item:
+    user = eval(user)
     with tracer.start_as_current_span("Add to cart") as span:
         add_endpoint_info(span, "/add_to_cart")
         try:
@@ -150,7 +151,7 @@ def add_to_cart(
                     add_operation_result(span, "success")
                     return item
                 raise HTTPException(403)
-        except KeyError:
+        except:
             add_operation_result(span, "failure: Cant add to cart item")
             raise HTTPException(404, f'Cant add to cart item')
 
@@ -202,10 +203,10 @@ def delete_item(id: UUID,
         try:
             if user['id'] is not None:
                 if staff_admin(user['role']):
-                    item = item_service.delete_design(id)
+                    item = item_service.delete_item(id)
                     add_operation_result(span, "success")
                     return item.dict()
                 raise HTTPException(403)
-        except KeyError:
+        except:
             add_operation_result(span, "failure")
-            raise HTTPException(404, f'Design with id={id} not found')
+            raise HTTPException(404, f'item with id={id} not found')

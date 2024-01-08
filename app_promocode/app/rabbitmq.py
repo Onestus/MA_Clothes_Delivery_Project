@@ -30,6 +30,7 @@ async def send_discount(discount: float, id: UUID):
         Message(body=message_body.encode()),
         routing_key='process_discount_queue'
     )
+    print('message sent')
     await channel.close()
     await connection.close()
 
