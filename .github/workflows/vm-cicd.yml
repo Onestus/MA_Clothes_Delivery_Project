@@ -9,7 +9,7 @@ jobs:
 
   update-and-deploy:
     runs-on: ubuntu-latest
-    needs: [ test-app-printing, test-app-cart, test-app-promocode, test-app-item, test-app-order, test-app-payment, test-app-delivery ]
+   # needs: [ test-app-printing, test-app-cart, test-app-promocode, test-app-item, test-app-order, test-app-payment, test-app-delivery ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
