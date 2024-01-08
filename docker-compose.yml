@@ -145,6 +145,21 @@ services:
     networks:
       - app
 
+  gateway:
+    build:
+      context: ./
+      dockerfile: ./gateway/Dockerfile
+    ports:
+      - "87:87"
+    # depends_on:
+    # - postgres-cart
+    # - rabbitmq
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+
   pgadmin:
     image: dpage/pgadmin4
     environment:
