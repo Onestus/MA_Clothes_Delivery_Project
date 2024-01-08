@@ -133,7 +133,7 @@ services:
   app_cart:
     build:
       context: ./
-      dockerfile: /app_cart/Dockerfile
+      dockerfile: ./app_cart/Dockerfile
     ports:
       - "86:86"
     # depends_on:
