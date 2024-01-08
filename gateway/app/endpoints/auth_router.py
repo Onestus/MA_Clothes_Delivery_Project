@@ -28,6 +28,8 @@ def get_user_role(request: Request):
     #return user
     try:
         roles = httpx.get(keycloak_user_info_url, headers=headers).json()
+        print("ROLES#############################################################################################")
+        print(roles)
         if 'admin' in roles["realm_access"]["roles"]:
             user['role'] = "admin"
         elif "client" in roles["realm_access"]["roles"]:
