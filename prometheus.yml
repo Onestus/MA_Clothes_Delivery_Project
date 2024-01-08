@@ -2,11 +2,13 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: 'app_delivery'
-    static_configs:
-      - targets: ['app_delivery:80']
-    # metrics_path: /metrics/delivery
   - job_name: 'app_printing'
     static_configs:
-      - targets: ['app_printing:81']
-    # metrics_path: /metrics/printings
+      - targets: ['158.160.14.173:81']
+    # metrics_path: /metrics/delivery
+  - job_name: 'app_delivery'
+    static_configs:
+      - targets: ['158.160.14.173:80']
+  - job_name: 'app_cart'
+    static_configs:
+      - targets: ['158.160.14.173:86']
