@@ -6,12 +6,12 @@ import logging
 
 
 host_ip = "192.168.1.92"
+keycloak_client_id = "gateway"
 keycloak_authorization_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/auth"
 keycloak_token_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/token"
 keycloak_user_info_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/userinfo"
-keycloak_client_id = "gateway"
-keycloak_client_secret = "wHqxhPsAPsC1KobUqtekChy4hUasdzdN"
-keycloak_redirect_uri = f"http://127.0.0.1:82/auth/callback"
+keycloak_client_secret = "VGnclHZpVKd0oBNiHVuOGcOR3MamxaOi"
+keycloak_redirect_uri = f"http://127.0.0.1:8000/auth/callback"
 keycloak_logout_uri = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/logout"
 
 auth_router = APIRouter(prefix='/auth', tags=['auth'])
@@ -22,14 +22,15 @@ def get_user_role(request: Request):
     
     token = request.session.get('auth_token')
     headers = {"Authorization": f"Bearer {token}"}
-    user = {'role': 'admin', 'id': '3ca85f64-5717-4562-b3fc-2c963f66afa6', 'username': 'admin'}
-    return user
+    user = {'role': '', 'id': ''}
     try:
         roles = httpx.get(keycloak_user_info_url, headers=headers).json()
-        if 'Viewer' in roles["realm_access"]["roles"]:
-            user['role'] = "Viewer"
-        elif "Customer" in roles["realm_access"]["roles"]:
-            user['role'] = "Customer"
+        if 'admin' in roles["realm_access"]["roles"]:
+            user['role'] = "admin"
+        elif "client" in roles["realm_access"]["roles"]:
+            user['role'] = "client"
+        elif "staff" in roles["realm_access"]["roles"]:
+            user['role'] = "staff"
         if roles["sub"]:
             user['id'] = roles["sub"]
         user['username'] = roles['preferred_username']
@@ -45,7 +46,6 @@ def _get_token(request: Request):
         auth_token = get_token(code)
         request.session['auth_token'] = auth_token
     return auth_token
-
 
 @auth_router.get("/login")
 def login(request: Request):
