@@ -37,7 +37,7 @@ async def process_discount(msg: IncomingMessage):
         order_service = OrderService(OrderRepo())
         order = order_service.set_discount(id, discount)
         print("ORDER:" + str(order.dict()))
-        make_request_to_payment_service(order.dict())
+        #make_request_to_payment_service(order.dict())
         # await send_discount(discount, id)  #ПОПЫТКА В РЕББИТ
     except:
         traceback.print_exc()
